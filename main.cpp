@@ -278,3 +278,141 @@ void updatePlayerData(const string &player1, const string &player2, int wins1, i
     remove(DATA_FILE.c_str());
     rename("temp.txt", DATA_FILE.c_str());
 }
+
+int main()
+{
+    string player1, player2;
+    char player = 'B'; // 'B' for player1, 'R' for player2
+    // Available pieces for each player: 2 of size 1, 2, and 3
+    int player1Pieces[3] = {2, 2, 2};
+    int player2Pieces[3] = {2, 2, 2};
+    char winner;
+    int x, y, size, choice, x1, y1;
+    bool gameWon = false;
+
+    // Get the usernames of the two players
+    cout << "Enter Player 1 username: ";
+    cin >> player1;
+    cout << "Enter Player 2 username: ";
+    cin >> player2;
+
+    int wins1 = 0, wins2 = 0;
+    bool previousGame = readPlayerData(player1, player2, wins1, wins2);
+
+    if (previousGame)
+    {
+        cout << "Previous games between " << player1 << " and " << player2 << " found.\n";
+        cout << player1 << " wins: " << wins1 << ", " << player2 << " wins: " << wins2 << "\n";
+
+        // Determine who starts based on wins
+        if (wins2 > wins1)
+        {
+            player = 'R'; // Player 2 starts
+            cout << player2 << " will start first.\n";
+        }
+        else
+        {
+            player = 'B'; // Player 1 starts
+            cout << player1 << " will start first.\n";
+        }
+    }
+    else
+    {
+        cout << "No previous games found between " << player1 << " and " << player2 << ".\n";
+    }
+
+    initBoard();
+    printBoard();
+
+    while (!gameWon && !isDraw())
+    {
+        // Alternate turns
+        if (player == 'B')
+            cout << player1 << "'s turn.\n";
+        else
+            cout << player2 << "'s turn.\n";
+
+        // Choose to place or move a piece
+        cout << "Enter 1 to place a piece, 2 to move a piece: ";
+        cin >> choice;
+
+        if (choice == 1)
+        {
+            if (player == 'B')
+            {
+                cout << "Remaining pieces: [Size 1: " << player1Pieces[0]
+                     << ", Size 2: " << player1Pieces[1] << ", Size 3: " << player1Pieces[2] << "]\n";
+            }
+            else if (player == 'R')
+            {
+                cout << "Remaining pieces: [Size 1: " << player2Pieces[0]
+                     << ", Size 2: " << player2Pieces[1] << ", Size 3: " << player2Pieces[2] << "]\n";
+            }
+            // Place a piece
+            cout << "Enter size of piece to place (1, 2, or 3): ";
+            cin >> size;
+            size--;
+            if ((player == 'B' && player1Pieces[size] == 0) || (player == 'R' && player2Pieces[size] == 0))
+            {
+                cout << "No pieces of this size available. Try again.\n";
+                continue;
+            }
+
+            cout << "Enter coordinates (row and column) to place piece (1-3): ";
+            cin >> x >> y;
+            x--, y--;
+
+            if (placePiece(x, y, player, size))
+            {
+                if (player == 'B')
+                    player1Pieces[size]--;
+                else
+                    player2Pieces[size]--;
+            }
+            else
+            {
+                continue;
+            }
+        }
+        else if (choice == 2)
+        {
+            // Move a piece
+            cout << "Enter coordinates of the piece to move (row and column): ";
+            cin >> x1 >> y1;
+            x1--, y1--;
+            cout << "Enter new coordinates to move piece to (row and column): ";
+            cin >> x >> y;
+            x--, y--;
+
+            if (!movePiece(x1, y1, x, y, player))
+            {
+                continue;
+            }
+        }
+
+        printBoard();
+        gameWon = checkWin(winner);
+
+        // Switch players
+        player = (player == 'B') ? 'R' : 'B';
+    }
+
+    if (gameWon)
+    {
+        cout << (winner == 'B' ? player1 : player2) << " wins!!!\n";
+
+        if (winner == 'B')
+            wins1++;
+        else
+            wins2++;
+
+        // Update the players' win data in the file
+        updatePlayerData(player1, player2, wins1, wins2);
+    }
+    else
+    {
+        cout << "Nobody wins!!!\n";
+    }
+
+    return 0;
+}
