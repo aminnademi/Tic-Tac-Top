@@ -3,6 +3,13 @@
 #include <cstring>
 #include <string>
 
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define BLUE "\033[34m"
+#define YELLOW "\033[33m"
+#define GREEN "\033[32m"
+#define PURPLE "\033[35m"
+
 using namespace std;
 
 const int N = 3;                             // Size of the board (3x3)
@@ -90,11 +97,11 @@ void printBoard()
                 // Print with color based on the player
                 if (player == 'B')
                 {
-                    cout << player << size << "  ";
+                    cout << BLUE << player << size << RESET << "  ";
                 }
                 else if (player == 'R')
                 {
-                    cout << player << size << "  ";
+                    cout << RED << player << size << RESET << "  ";
                 }
             }
         }
@@ -168,7 +175,8 @@ bool placePiece(int x, int y, char player, int size)
     // Check if the placement is valid
     if (x < 0 || x >= N || y < 0 || y >= N || (!board[x][y].isEmpty() && board[x][y].getTopSize() >= size))
     {
-        cout << "Invalid move. Try again.\n";
+        cout << YELLOW << "Invalid move. Try again.\n"
+             << RESET;
         return false;
     }
 
@@ -183,20 +191,23 @@ bool movePiece(int x1, int y1, int x2, int y2, char player)
     // Validate move
     if (x1 < 0 || x1 >= N || y1 < 0 || y1 >= N || x2 < 0 || x2 >= N || y2 < 0 || y2 >= N)
     {
-        cout << "Invalid move. Out of bounds.\n";
+        cout << YELLOW << "Invalid move. Out of bounds.\n"
+             << RESET;
         return false;
     }
 
     if (board[x1][y1].isEmpty() || board[x1][y1].getTopPlayer() != player)
     {
-        cout << "Invalid move. No piece of yours at the source location.\n";
+        cout << YELLOW << "Invalid move. No piece of yours at the source location.\n"
+             << RESET;
         return false;
     }
 
     int size = board[x1][y1].getTopSize();
     if (!board[x2][y2].isEmpty() && board[x2][y2].getTopSize() >= size)
     {
-        cout << "Invalid move. Cannot place a smaller or equal-sized piece on top of a larger one.\n";
+        cout << YELLOW << "Invalid move. Cannot place a smaller or equal-sized piece on top of a larger one.\n"
+             << RESET;
         return false;
     }
 
@@ -291,9 +302,9 @@ int main()
     bool gameWon = false;
 
     // Get the usernames of the two players
-    cout << "Enter Player 1 username: ";
+    cout << BLUE << "Enter Player 1 username: " << RESET;
     cin >> player1;
-    cout << "Enter Player 2 username: ";
+    cout << RED << "Enter Player 2 username: " << RESET;
     cin >> player2;
 
     int wins1 = 0, wins2 = 0;
@@ -301,24 +312,27 @@ int main()
 
     if (previousGame)
     {
-        cout << "Previous games between " << player1 << " and " << player2 << " found.\n";
+        cout << PURPLE << "Previous games between " << player1 << " and " << player2 << " found.\n";
         cout << player1 << " wins: " << wins1 << ", " << player2 << " wins: " << wins2 << "\n";
 
         // Determine who starts based on wins
         if (wins2 > wins1)
         {
             player = 'R'; // Player 2 starts
-            cout << player2 << " will start first.\n";
+            cout << player2 << " will start first.\n"
+                 << RESET;
         }
         else
         {
             player = 'B'; // Player 1 starts
-            cout << player1 << " will start first.\n";
+            cout << player1 << " will start first.\n"
+                 << RESET;
         }
     }
     else
     {
-        cout << "No previous games found between " << player1 << " and " << player2 << ".\n";
+        cout << PURPLE << "No previous games found between " << player1 << " and " << player2 << ".\n"
+             << RESET;
     }
 
     initBoard();
@@ -328,37 +342,42 @@ int main()
     {
         // Alternate turns
         if (player == 'B')
-            cout << player1 << "'s turn.\n";
+            cout << BLUE << player1 << "'s turn.\n"
+                 << RESET;
         else
-            cout << player2 << "'s turn.\n";
+            cout << RED << player2 << "'s turn.\n"
+                 << RESET;
 
         // Choose to place or move a piece
-        cout << "Enter 1 to place a piece, 2 to move a piece: ";
+        cout << PURPLE << "Enter 1 to place a piece, 2 to move a piece: " << RESET;
         cin >> choice;
 
         if (choice == 1)
         {
             if (player == 'B')
             {
-                cout << "Remaining pieces: [Size 1: " << player1Pieces[0]
-                     << ", Size 2: " << player1Pieces[1] << ", Size 3: " << player1Pieces[2] << "]\n";
+                cout << PURPLE << "Remaining pieces: [Size 1: " << player1Pieces[0]
+                     << ", Size 2: " << player1Pieces[1] << ", Size 3: " << player1Pieces[2] << "]\n"
+                     << RESET;
             }
             else if (player == 'R')
             {
-                cout << "Remaining pieces: [Size 1: " << player2Pieces[0]
-                     << ", Size 2: " << player2Pieces[1] << ", Size 3: " << player2Pieces[2] << "]\n";
+                cout << PURPLE << "Remaining pieces: [Size 1: " << player2Pieces[0]
+                     << ", Size 2: " << player2Pieces[1] << ", Size 3: " << player2Pieces[2] << "]\n"
+                     << RESET;
             }
             // Place a piece
-            cout << "Enter size of piece to place (1, 2, or 3): ";
+            cout << PURPLE << "Enter size of piece to place (1, 2, or 3): " << RESET;
             cin >> size;
             size--;
             if ((player == 'B' && player1Pieces[size] == 0) || (player == 'R' && player2Pieces[size] == 0))
             {
-                cout << "No pieces of this size available. Try again.\n";
+                cout << YELLOW << "No pieces of this size available. Try again.\n"
+                     << RESET;
                 continue;
             }
 
-            cout << "Enter coordinates (row and column) to place piece (1-3): ";
+            cout << PURPLE << "Enter coordinates (row and column) to place piece (1-3): " << RESET;
             cin >> x >> y;
             x--, y--;
 
@@ -377,10 +396,10 @@ int main()
         else if (choice == 2)
         {
             // Move a piece
-            cout << "Enter coordinates of the piece to move (row and column): ";
+            cout << PURPLE << "Enter coordinates of the piece to move (row and column): " << RESET;
             cin >> x1 >> y1;
             x1--, y1--;
-            cout << "Enter new coordinates to move piece to (row and column): ";
+            cout << PURPLE << "Enter new coordinates to move piece to (row and column): " << RESET;
             cin >> x >> y;
             x--, y--;
 
@@ -399,7 +418,8 @@ int main()
 
     if (gameWon)
     {
-        cout << (winner == 'B' ? player1 : player2) << " wins!!!\n";
+        cout << GREEN << (winner == 'B' ? player1 : player2) << " wins!!!\n"
+             << RESET;
 
         if (winner == 'B')
             wins1++;
@@ -411,7 +431,8 @@ int main()
     }
     else
     {
-        cout << "Nobody wins!!!\n";
+        cout << YELLOW << "Nobody wins!!!\n"
+             << RESET;
     }
 
     return 0;
