@@ -162,3 +162,58 @@ bool checkWin(char &winner)
 
     return false;
 }
+
+bool placePiece(int x, int y, char player, int size)
+{
+    // Check if the placement is valid
+    if (x < 0 || x >= N || y < 0 || y >= N || (!board[x][y].isEmpty() && board[x][y].getTopSize() >= size))
+    {
+        cout << "Invalid move. Try again.\n";
+        return false;
+    }
+
+    // Place the piece by adding it to the cell
+    board[x][y].addPiece(player, size);
+
+    return true;
+}
+
+bool movePiece(int x1, int y1, int x2, int y2, char player)
+{
+    // Validate move
+    if (x1 < 0 || x1 >= N || y1 < 0 || y1 >= N || x2 < 0 || x2 >= N || y2 < 0 || y2 >= N)
+    {
+        cout << "Invalid move. Out of bounds.\n";
+        return false;
+    }
+
+    if (board[x1][y1].isEmpty() || board[x1][y1].getTopPlayer() != player)
+    {
+        cout << "Invalid move. No piece of yours at the source location.\n";
+        return false;
+    }
+
+    int size = board[x1][y1].getTopSize();
+    if (!board[x2][y2].isEmpty() && board[x2][y2].getTopSize() >= size)
+    {
+        cout << "Invalid move. Cannot place a smaller or equal-sized piece on top of a larger one.\n";
+        return false;
+    }
+
+    // Move the top piece from (x1, y1) to (x2, y2)
+    board[x2][y2].addPiece(player, size);
+    board[x1][y1].removeTopPiece();
+
+    return true;
+}
+
+bool isDraw()
+{
+    // Check if the board is full
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            if (board[i][j].isEmpty())
+                return false;
+
+    return true;
+}
