@@ -59,3 +59,106 @@ struct Cell
         return pieceCount == 0;
     }
 };
+
+// Game board (3x3) with stacks of pieces
+Cell board[N][N];
+
+void initBoard()
+{
+    // Initialize the board by clearing all cells
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            board[i][j] = Cell(); // Reset each cell
+}
+
+void printBoard()
+{
+    // Print the current state of the board
+    cout << "\nCurrent board:\n";
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            if (board[i][j].isEmpty())
+                cout << "#   ";
+            else
+            {
+                // Get the player and size of the top piece
+                char player = board[i][j].getTopPlayer();
+                int size = board[i][j].getTopSize();
+                size++;
+                // Print with color based on the player
+                if (player == 'B')
+                {
+                    cout << player << size << "  ";
+                }
+                else if (player == 'R')
+                {
+                    cout << player << size << "  ";
+                }
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+bool checkWin(char &winner)
+{
+    // Check if either player has aligned three pieces in a row, column, or diagonal
+    for (int i = 0; i < N; i++)
+    {
+        // Check rows for both players
+        if (board[i][0].getTopPlayer() == 'B' && board[i][1].getTopPlayer() == 'B' && board[i][2].getTopPlayer() == 'B')
+        {
+            winner = 'B';
+            return true;
+        }
+
+        if (board[i][0].getTopPlayer() == 'R' && board[i][1].getTopPlayer() == 'R' && board[i][2].getTopPlayer() == 'R')
+        {
+            winner = 'R';
+            return true;
+        }
+
+        // Check columns for both players
+        if (board[0][i].getTopPlayer() == 'B' && board[1][i].getTopPlayer() == 'B' && board[2][i].getTopPlayer() == 'B')
+        {
+            winner = 'B';
+            return true;
+        }
+
+        if (board[0][i].getTopPlayer() == 'R' && board[1][i].getTopPlayer() == 'R' && board[2][i].getTopPlayer() == 'R')
+        {
+            winner = 'R';
+            return true;
+        }
+    }
+
+    // Check diagonals for both players
+    if (board[0][0].getTopPlayer() == 'B' && board[1][1].getTopPlayer() == 'B' && board[2][2].getTopPlayer() == 'B')
+    {
+        winner = 'B';
+        return true;
+    }
+
+    if (board[0][0].getTopPlayer() == 'R' && board[1][1].getTopPlayer() == 'R' && board[2][2].getTopPlayer() == 'R')
+    {
+        winner = 'R';
+        return true;
+    }
+
+    if (board[0][2].getTopPlayer() == 'B' && board[1][1].getTopPlayer() == 'B' && board[2][0].getTopPlayer() == 'B')
+    {
+        winner = 'B';
+        return true;
+    }
+
+    if (board[0][2].getTopPlayer() == 'R' && board[1][1].getTopPlayer() == 'R' && board[2][0].getTopPlayer() == 'R')
+    {
+        winner = 'R';
+        return true;
+    }
+
+    return false;
+}
