@@ -217,3 +217,64 @@ bool isDraw()
 
     return true;
 }
+
+// Function to read player data from file
+bool readPlayerData(const string &player1, const string &player2, int &wins1, int &wins2)
+{
+    ifstream file(DATA_FILE);
+    if (!file)
+        return false;
+
+    string p1, p2;
+    int w1, w2;
+
+    while (file >> p1 >> p2 >> w1 >> w2)
+    {
+        if ((p1 == player1 && p2 == player2) || (p1 == player2 && p2 == player1))
+        {
+            wins1 = (p1 == player1) ? w1 : w2;
+            wins2 = (p1 == player1) ? w2 : w1;
+            return true;
+        }
+    }
+    return false;
+}
+
+// Function to update player data
+void updatePlayerData(const string &player1, const string &player2, int wins1, int wins2)
+{
+    ifstream file(DATA_FILE);
+    ofstream temp("temp.txt");
+
+    string p1, p2;
+    int w1, w2;
+    bool updated = false;
+
+    // Copy all data to the temp file, and update the win count for the current players
+    while (file >> p1 >> p2 >> w1 >> w2)
+    {
+        if ((p1 == player1 && p2 == player2) || (p1 == player2 && p2 == player1))
+        {
+            // Update the win count for the current players
+            if (p1 == player1)
+                temp << player1 << " " << player2 << " " << wins1 << " " << wins2 << endl;
+            else
+                temp << player1 << " " << player2 << " " << wins2 << " " << wins1 << endl;
+            updated = true;
+        }
+        else
+        {
+            temp << p1 << " " << p2 << " " << w1 << " " << w2 << endl;
+        }
+    }
+
+    // If the players are not found in the file, add their new data
+    if (!updated)
+        temp << player1 << " " << player2 << " " << wins1 << " " << wins2 << endl;
+
+    // Close the files and replace the original file with the updated temp file
+    file.close();
+    temp.close();
+    remove(DATA_FILE.c_str());
+    rename("temp.txt", DATA_FILE.c_str());
+}
